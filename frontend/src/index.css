@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1A1A1A;
+    background-color: #F0F2F5;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-[10px] border border-[#CCCCCC] shadow-[0_1px_3px_rgba(4,44,83,0.08)];
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white rounded-lg px-4 py-[7px] text-[13px] font-medium hover:bg-primary-hover transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-primary border border-primary rounded-lg px-4 py-[7px] text-[13px] font-medium hover:bg-primary-light transition-colors;
+  }
+
+  .btn-danger {
+    @apply bg-status-red text-white rounded-lg px-4 py-[7px] text-[13px] font-medium hover:bg-red-700 transition-colors;
+  }
+
+  .input-field {
+    @apply border border-[#CCCCCC] rounded-lg px-3 py-2 text-[13px] outline-none focus:ring-[3px] focus:ring-primary/12 focus:border-primary transition-all;
+  }
+
+  .table-header-blue {
+    @apply bg-blue-accent text-white text-[12px] font-medium;
+  }
+
+  .table-header-orange {
+    @apply bg-primary text-white text-[12px] font-medium;
+  }
+
+  .skeleton {
+    @apply bg-gray-200 animate-pulse rounded;
+  }
+}
