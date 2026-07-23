@@ -30,7 +30,7 @@
   }
 
   .input-field {
-    @apply border border-[#CCCCCC] rounded-lg px-3 py-2 text-[13px] outline-none focus:ring-[3px] focus:ring-primary/12 focus:border-primary transition-all;
+    @apply border border-[#CCCCCC] rounded-lg px-3 py-2 text-[13px] outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary transition-all;
   }
 
   .table-header-blue {

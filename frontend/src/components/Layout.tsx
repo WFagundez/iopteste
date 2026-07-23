@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useApp } from './context';
+import { useApp } from '../context';
 import { Menu, Bell, ChevronDown, LayoutDashboard, ListChecks, FileText } from 'lucide-react';
 
 const menuItems = [
@@ -102,9 +102,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </button>
             <div className="flex items-center gap-2 text-white">
               <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-xs font-bold">
-                LC
+                WF
               </div>
-              <span className="text-sm hidden sm:inline">Lara Crespi</span>
+              <span className="text-sm hidden sm:inline">Wesley Fagundes</span>
               <ChevronDown size={14} className="text-white/60" />
             </div>
           </div>

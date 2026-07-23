@@ -179,39 +179,24 @@ function SortableBloco({
                 Nenhum item neste bloco.
               </div>
             ) : (
-              <DndContext
-                sensors={useSensors(
-                  useSensor(PointerSensor),
-                  useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-                )}
-                collisionDetection={closestCenter}
-                onDragEnd={(event) => {
-                  const { active, over } = event;
-                  if (over && active.id !== over.id) {
-                    const oldIndex = bloco.itens.findIndex(i => `item-${bloco.nome}-${i.item_codigo}` === active.id);
-                    const newIndex = bloco.itens.findIndex(i => `item-${bloco.nome}-${i.item_codigo}` === over.id);
-                    onReorderItems(arrayMove(bloco.itens, oldIndex, newIndex));
-                  }
-                }}
+              <SortableContext
+                items={bloco.itens.map(i => `item-${bloco.nome}-${i.item_codigo}`)}
+                strategy={verticalListSortingStrategy}
               >
-                <SortableContext
-                  items={bloco.itens.map(i => `item-${bloco.nome}-${i.item_codigo}`)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {bloco.itens.map((item, idx) => {
-                    const itemData = allItems.find(i => i.codigo === item.item_codigo);
-                    return (
-                      <SortableItemRow
-                        key={`item-${bloco.nome}-${item.item_codigo}`}
-                        id={`item-${bloco.nome}-${item.item_codigo}`}
-                        item={item}
-                        itemData={itemData}
-                        onRemove={() => onRemoveItem(item.item_codigo)}
-                      />
-                    );
-                  })}
-                </SortableContext>
-              </DndContext>
+                {bloco.itens.map((item, idx) => {
+                  const itemData = allItems.find(i => i.codigo === item.item_codigo);
+                  return (
+                    <SortableItemRow
+                      key={`item-${bloco.nome}-${item.item_codigo}`}
+                      id={`item-${bloco.nome}-${item.item_codigo}`}
+                      item={item}
+                      itemData={itemData}
+                      onRemove={() => onRemoveItem(item.item_codigo)}
+                      blocoNome={bloco.nome}
+                    />
+                  );
+                })}
+              </SortableContext>
             )}
             <button
               onClick={() => setShowAddModal(true)}
@@ -256,11 +241,12 @@ function SortableBloco({
   );
 }
 
-function SortableItemRow({ id, item, itemData, onRemove }: {
+function SortableItemRow({ id, item, itemData, onRemove, blocoNome }: {
   id: string;
   item: BlocoItem;
   itemData?: Item;
   onRemove: () => void;
+  blocoNome: string;
 }) {
   const {
     attributes,
@@ -269,7 +255,7 @@ function SortableItemRow({ id, item, itemData, onRemove }: {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id, data: { type: 'item', blocoNome } });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -652,11 +638,28 @@ export default function FormularioEditPage() {
           onDragStart={({ active }) => setActiveDragId(active.id as string)}
           onDragEnd={({ active, over }) => {
             setActiveDragId(null);
-            if (over && active.id !== over.id) {
-              const oldIndex = form.blocos.findIndex((_, i) => `bloco-${i}` === active.id);
-              const newIndex = form.blocos.findIndex((_, i) => `bloco-${i}` === over.id);
-              setForm(f => ({ ...f, blocos: arrayMove(f.blocos, oldIndex, newIndex) }));
+            if (!over || active.id === over.id) return;
+
+            const activeType = (active.data.current as any)?.type;
+
+            if (activeType === 'item') {
+              const blocoNome = (active.data.current as any)?.blocoNome;
+              setForm(f => ({
+                ...f,
+                blocos: f.blocos.map(b => {
+                  if (b.nome !== blocoNome) return b;
+                  const oldIndex = b.itens.findIndex(i => `item-${b.nome}-${i.item_codigo}` === active.id);
+                  const newIndex = b.itens.findIndex(i => `item-${b.nome}-${i.item_codigo}` === over.id);
+                  if (oldIndex === -1 || newIndex === -1) return b;
+                  return { ...b, itens: arrayMove(b.itens, oldIndex, newIndex) };
+                }),
+              }));
+              return;
             }
+
+            const oldIndex = form.blocos.findIndex((_, i) => `bloco-${i}` === active.id);
+            const newIndex = form.blocos.findIndex((_, i) => `bloco-${i}` === over.id);
+            setForm(f => ({ ...f, blocos: arrayMove(f.blocos, oldIndex, newIndex) }));
           }}
         >
           <SortableContext
